@@ -1,0 +1,55 @@
+name: Python Flask CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: M@tech@pp1234
+          MYSQL_DATABASE: crud
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Run tests
+      run: |
+        python -m unittest discover -s tests
+
+    - name: Start Flask app
+      env:
+        MYSQL_HOST: localhost
+        MYSQL_USER: root
+        MYSQL_PASSWORD: M@tech@pp1234
+        MYSQL_DB: crud
+      run: |
+        python app.py
