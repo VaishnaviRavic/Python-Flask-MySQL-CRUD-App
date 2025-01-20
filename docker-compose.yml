@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    image: flask-mysql-crud-app:latest
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: M@tech@pp1234
+      MYSQL_DB: crud
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: M@tech@pp1234
+      MYSQL_DATABASE: crud
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
